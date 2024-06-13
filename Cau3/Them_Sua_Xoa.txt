@@ -1,0 +1,115 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace _32_LeAnhTu_21103100432_LTNET
+{
+    public partial class FrmCau3 : Form
+    {
+        SqlConnection conn = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""{Application.StartupPath}\qlteamleader_10_LeAnhTu_ltnet.mdf"";Integrated Security=True;Connect Timeout=30");
+        DataTable dt = new DataTable();
+        public FrmCau3()
+        {
+            InitializeComponent();
+        }
+        void loaddl()
+        {
+            txtten.DataBindings.Clear();
+            txtns.DataBindings.Clear();
+            txtluong.DataBindings.Clear();
+            txttk.DataBindings.Clear();
+            txttn.DataBindings.Clear();
+            SqlCommand cmd = new SqlCommand("select * from Teamleader", conn);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            dt.Clear();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+            txtten.DataBindings.Add("Text", dt, "hoten");
+            txtns.DataBindings.Add("Text", dt, "namsinh");
+            txtluong.DataBindings.Add("Text", dt, "luong");
+            txttk.DataBindings.Add("Text", dt, "tientk");
+            txttn.DataBindings.Add("Text", dt, "luongtn");
+        }
+        private void FrmCau3_Load(object sender, EventArgs e)
+        {
+            if(conn.State == ConnectionState.Closed) conn.Open();
+            loaddl();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SqlCommand cmd = new SqlCommand("insert into Teamleader values(@Hoten, @Namsinh, @Luong, @Sotk, @Luongtn)",conn);
+            cmd.Parameters.AddWithValue("Hoten",txtten.Text);
+            cmd.Parameters.AddWithValue("Namsinh", txtns.Text);
+            cmd.Parameters.AddWithValue("Luong", txtluong.Text);
+            cmd.Parameters.AddWithValue("Sotk", txttk.Text);
+            cmd.Parameters.AddWithValue("Luongtn", txttn.Text);
+            if(cmd.ExecuteNonQuery() > 0)
+            {
+                MessageBox.Show("Them thanh cong");
+            }
+            else
+            {
+                MessageBox.Show("Them that bai");
+            }
+            loaddl();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            int dongchon = -1;
+            dongchon = dataGridView1.CurrentCellAddress.Y;
+            if (dongchon >= 0)
+            {
+                SqlCommand cmd = new SqlCommand("update Teamleader set hoten=@Hoten, namsinh=@Namsinh, luong=@Luong, tientk=@Sotk, luongtn=@Luongtn where hoten=@Hotencu", conn);
+                cmd.Parameters.AddWithValue("@Hoten", txtten.Text);
+                cmd.Parameters.AddWithValue("@Namsinh", txtns.Text);
+                cmd.Parameters.AddWithValue("@Luong", txtluong.Text);
+                cmd.Parameters.AddWithValue("@Sotk", txttk.Text);
+                cmd.Parameters.AddWithValue("@Luongtn", txttn.Text);
+                cmd.Parameters.AddWithValue("@Hotencu", dataGridView1.Rows[dongchon].Cells["hoten"].Value.ToString());
+                if (cmd.ExecuteNonQuery() > 0)
+                {
+                    MessageBox.Show("Sua thanh cong");
+                }
+                else
+                {
+                    MessageBox.Show("Sua that bai");
+                }
+                loaddl();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            int dongchon = -1;
+            dongchon = dataGridView1.CurrentCellAddress.Y;
+            if (dongchon >= 0)
+            {
+                SqlCommand cmd = new SqlCommand("delete from Teamleader where hoten=@hotencu", conn);
+                cmd.Parameters.AddWithValue("@hotencu", dataGridView1.Rows[dongchon].Cells["hoten"].Value.ToString());
+                if (cmd.ExecuteNonQuery() > 0)
+                {
+                    MessageBox.Show("Xoa thanh cong");
+                }
+                else
+                {
+                    MessageBox.Show("Xoa that bai");
+                }
+                loaddl();
+            }
+        }
+    }
+}

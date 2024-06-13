@@ -1,0 +1,95 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+namespace _32_LeAnhTu_21103100432_LTNET
+{
+    public partial class FrmCau4 : Form
+    {
+        SqlConnection con = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={Application.StartupPath}\qlcauthu_10_LeAnhTu_ltnet.mdf;Integrated Security=True;Connect Timeout=30");
+        DataTable dt = new DataTable();
+        int index = 0;
+        public FrmCau4()
+        {
+            InitializeComponent();
+        }
+        void ShowRow()
+        {
+            DataRow row = dt.Rows[index];
+            txtma.Text = row["mact"].ToString();
+            txtten.Text = row["hoten"].ToString();
+            txtns.Text = row["ngaysinh"].ToString();
+            txtque.Text = row["quequan"].ToString();
+        }
+        void loaddl()
+        {
+            txtma.DataBindings.Clear();
+            txtten.DataBindings.Clear();
+            txtns.DataBindings.Clear();
+            txtque.DataBindings.Clear();
+            // Lay dl
+            SqlCommand cmd = new SqlCommand("select * from cauthu", con);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            dt.Clear();
+            da.Fill(dt);
+
+            ShowRow();
+        }
+        private void FrmCau4_Load(object sender, EventArgs e)
+        {
+            if (con.State == ConnectionState.Closed) con.Open();
+            loaddl();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            index = 0;
+            ShowRow();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(index > 0)
+            {
+                index--;
+                ShowRow();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (index < dt.Rows.Count - 1)
+            {
+                index++;
+                ShowRow();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            index = dt.Rows.Count - 1;
+            ShowRow();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            FrmThem f = new FrmThem();
+            if(f.ShowDialog() == DialogResult.OK)
+            {
+                loaddl();
+            }
+            
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

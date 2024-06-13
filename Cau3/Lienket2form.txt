@@ -1,0 +1,126 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+namespace _32_LeAnhTu_21103100432_LTNET
+{
+    public partial class FrmCau5 : Form
+    {
+        SqlConnection con = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={Application.StartupPath}\qlcauthu_10_LeAnhTu_ltnet.mdf;Integrated Security=True;Connect Timeout=30");
+        DataTable dt = new DataTable();
+        int index = 0;
+        public FrmCau5()
+        {
+            InitializeComponent();
+        }
+        void Showdata()
+        {
+            DataRow row = dt.Rows[index];
+            txtma.Text = row["mact"].ToString();
+            txtten.Text = row["hoten"].ToString();
+            DateTime ngaysinh = DateTime.Parse(row["ngaysinh"].ToString());
+            txtns.Text = $"{ngaysinh.Day}/{ngaysinh.Month}/{ngaysinh.Year}";
+            txtque.Text = row["quequan"].ToString() ;
+        }
+        void loaddl()
+        {
+            txtma.DataBindings.Clear();
+            txtten.DataBindings.Clear();
+            txtns.DataBindings.Clear();
+            txtque.DataBindings.Clear();
+            // Lay dl
+            SqlCommand cmd = new SqlCommand("select * from cauthu", con);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            dt.Clear();
+            da.Fill(dt);
+
+            Showdata();
+        }
+        private void FrmCau5_Load(object sender, EventArgs e)
+        {
+            if(con.State == ConnectionState.Closed) con.Open();
+            loaddl();   
+            
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            index = 0;
+            Showdata();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(index > 0)
+            {
+                index--;
+                Showdata();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if(index < dt.Rows.Count -1) {
+                index++;
+                Showdata();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            index = dt.Rows.Count - 1;
+            Showdata();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            string dateString = txtns.Text;
+            DateTime timeValue;
+            DateTime.TryParse(dateString, out timeValue);
+            DataRow row = dt.Rows[index];
+            SqlCommand cmd = new SqlCommand("update cauthu set mact=@a1, hoten=@a2, ngaysinh=@a3, quequan=@a4 where mact=@a5",con);
+            cmd.Parameters.AddWithValue("@a1", txtma.Text);
+            cmd.Parameters.AddWithValue("@a2", txtten.Text);
+            cmd.Parameters.AddWithValue("@a3", timeValue);
+            cmd.Parameters.AddWithValue("@a4", txtque.Text);
+            cmd.Parameters.AddWithValue("@a5", row["mact"].ToString());
+            if(cmd.ExecuteNonQuery() > 0)
+            {
+                MessageBox.Show("Sua thanh cong");
+                
+            }
+            else
+            {
+                MessageBox.Show("Sua that bai");
+            }
+            loaddl();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SqlCommand cmd = new SqlCommand("delete from cauthu where mact=@ma",con);
+            cmd.Parameters.AddWithValue("ma", txtma.Text);
+            if (cmd.ExecuteNonQuery() > 0)
+            {
+                MessageBox.Show("Xoa thanh cong");
+                index = 0;
+            }
+            else
+            {
+                MessageBox.Show("Xoa that bai");
+            }
+            loaddl();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

@@ -1,0 +1,18 @@
+private void cau2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FrmCau2 f = new FrmCau2();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void cau3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FrmCau3 f = new FrmCau3();
+            f.MdiParent = this;
+            f.Show();
+        }
+
+        private void thoatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
