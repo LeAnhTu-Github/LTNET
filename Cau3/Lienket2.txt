@@ -1,0 +1,62 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace _32_LeAnhTu_21103100432_LTNET
+{
+    public partial class FrmThem : Form
+    {
+        SqlConnection con = new SqlConnection($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={Application.StartupPath}\qlcauthu_10_LeAnhTu_ltnet.mdf;Integrated Security=True;Connect Timeout=30");
+        DataTable dt = new DataTable();
+        public FrmThem()
+        {
+            InitializeComponent();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (con.State == ConnectionState.Closed) con.Open();
+            SqlCommand cmd = new SqlCommand("insert into cauthu values(@mact, @hoten, @ngaysinh, @quequan )", con);
+            cmd.Parameters.AddWithValue("mact", txtma.Text);
+            cmd.Parameters.AddWithValue("hoten", txtten.Text);
+            cmd.Parameters.AddWithValue("ngaysinh", txtns.Text);
+            cmd.Parameters.AddWithValue("quequan", cbque.SelectedItem.ToString());
+            if (cmd.ExecuteNonQuery() > 0)
+            {
+                MessageBox.Show("Them thanh cong");
+                FrmCau4 f = new FrmCau4();
+                f.Show();
+
+            }
+            else
+            {
+                MessageBox.Show("Them that bai");
+            }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            txtma.Text = "";
+            txtten.Text = "";
+            txtns.Text = "";
+            cbque.SelectedIndex = 0;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void FrmThem_Load(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
